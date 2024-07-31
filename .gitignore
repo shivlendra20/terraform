@@ -1,0 +1,7 @@
+**/*.tfstate
+**/*terraform.tfstate.d
+**/*.tfstate.backup
+**/terraform.tfvars
+**/*.terraform.lock.hcl
+**/.terraform/
+**/.backend.conf
