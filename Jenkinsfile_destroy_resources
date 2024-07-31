@@ -24,7 +24,7 @@ pipeline {
                          echo "service_name length is valid."
                     } else{
                             error("Service name length is not within the valid range.")
-                    }
+                      }
                 }
             }
         }
@@ -35,13 +35,12 @@ pipeline {
         }
         stage('Clone repository') {
             steps {
-                git credentialsId: 'GitHub',
+                git credentialsId: 'Github',
                 url: "${repo_url}"
             }
         }
         stage('Create tfvars file') {
             steps {
-                {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "{aws_credentials_id}", accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) 
                 {
                     sh """
@@ -52,49 +51,30 @@ pipeline {
                     aws_secret_key="${AWS_SECRET_ACCESS_KEY}"
                 """
                 }
-                }
             }
         }
         stage('Terraform init') {
             steps {
-                {
-                    sh 'terraform init'
-                    sh """
-                        if terraform workspace new ${env.service_name}-${env.environment} 2>&1 | grep -q "already exists"; then
-                            terraform workspace select ${env.service_name}-${env.environment}
-                        else
-                            terraform workspace new ${env.service_name}-${env.environment}
-                        fi
-                    """
-                }
+                  sh 'terraform init'
+                  sh "terraform workspace select ${env.service_name}-${env.environment}"
             }
         }
         stage('Terraform validate') {
             steps {
-                {
-                    sh 'terraform validate'
-                }
+                  sh 'terraform validate'
             }
         }
         stage('Terraform plan') {
             steps {
-                    {
-                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "{aws_credentials_id}", accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-                        sh """
-                        terraform plan 
-                        """
-                    }
-                }
+                  withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "{aws_credentials_id}", accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                  sh 'terraform plan '
+                  }
             }
         }
-        stage('Terraform Apply') {
+        stage('Terraform Destroy') {
             steps {
-                    {
-                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "{aws_credentials_id}", accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-                    sh """
-                    terraform apply -auto-approve
-                    """
-                    }
+                  withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "{aws_credentials_id}", accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                      sh 'terraform destroy -auto-approve'
                 }
             }
         }
