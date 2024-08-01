@@ -57,7 +57,7 @@ pipeline {
     
         stage('Terraform init') {
             steps {
-                {
+                
                     sh 'terraform init'
                     sh """
                         if terraform workspace new ${env.service_name}-${env.environment} 2>&1 | grep -q "already exists"; then
@@ -66,8 +66,8 @@ pipeline {
                             terraform workspace new ${env.service_name}-${env.environment}
                         fi
                     """
-                }
             }
+            
         }
         stage('Terraform validate') {
             steps {
@@ -78,24 +78,24 @@ pipeline {
         }
         stage('Terraform plan') {
             steps {
-                    {
-                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "{aws_credentials_id}", accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-                        sh """
-                        terraform plan 
-                        """
-                    }
-                }
+                    
+                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "{aws_credentials_id}", accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                    sh """
+                    terraform plan 
+                    """
+                    
+                
             }
         }
         stage('Terraform Apply') {
             steps {
-                    {
+                    
                     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "{aws_credentials_id}", accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
                     sh """
                     terraform apply -auto-approve
                     """
-                    }
-                }
+                    
+                
             }
         }
     }
