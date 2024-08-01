@@ -71,9 +71,9 @@ pipeline {
         }
         stage('Terraform validate') {
             steps {
-                {
+                
                     sh 'terraform validate'
-                }
+                
             }
         }
         stage('Terraform plan') {
