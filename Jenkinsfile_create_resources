@@ -41,7 +41,7 @@ pipeline {
         }
         stage('Create tfvars file') {
             steps {
-                {
+                
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "{aws_credentials_id}", accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) 
                 {
                     sh """
@@ -52,9 +52,9 @@ pipeline {
                     aws_secret_key="${AWS_SECRET_ACCESS_KEY}"
                 """
                 }
-                }
             }
         }
+    
         stage('Terraform init') {
             steps {
                 {
