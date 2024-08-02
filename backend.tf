@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket               = "terraformbucketfmrecscluster"  # Existing bucket name
+    bucket               = "terraformbucketnew"  # Existing bucket name
     key                  = "terraform.tfstate"
     workspace_key_prefix = "workspaces"
     region               = "ap-south-1"
