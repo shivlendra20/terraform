@@ -26,8 +26,10 @@ pipeline {
         }
         stage('Debug AWS Credentials') {
             steps {
-                sh 'echo $AWS_ACCESS_KEY_ID'
-                sh 'echo $AWS_SECRET_ACCESS_KEY'
+                script {
+                    echo "AWS_ACCESS_KEY_ID: ${env.AWS_ACCESS_KEY_ID}"
+                    echo "AWS_SECRET_ACCESS_KEY: ${env.AWS_SECRET_ACCESS_KEY}"
+                }
             }
         }
         stage('Create tfvars file') {
