@@ -9,7 +9,7 @@ pipeline {
 
     environment {
         AWS_DEFAULT_REGION= 'ap-south-1'
-        aws_credentials_id = 'AKIATLWHLDWZ72UKU5U3'
+        aws_credentials_id = 'aws_credentials_id'
         repo_url = "https://github.com/shivlendra20/terraform"
     }
 
