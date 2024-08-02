@@ -57,6 +57,7 @@ pipeline {
                           -backend-config="bucket=terraformbucketnew" \
                           -backend-config="key=terraform.tfstate" \
                           -backend-config="region=ap-south-1"
+                        terraform state push  
                     '''
                 }
             }
