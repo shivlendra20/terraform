@@ -10,7 +10,7 @@ pipeline {
     environment {
         AWS_DEFAULT_REGION= 'ap-south-1'
         aws_credentials_id = 'aws_credentials_id'
-        repo_url = "https://github.com/shivlendra20/terraform"
+        repo_url = "https://github.com/shivlendra20/terraform.git"
     }
 
     stages {
@@ -37,6 +37,15 @@ pipeline {
                 url: "${repo_url}"
             }
         }
+
+        stage('Test AWS Credentials') {
+            steps {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "${aws_credentials_id}", accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                    sh 'echo "AWS Access Key ID: $AWS_ACCESS_KEY_ID"'
+                    sh 'echo "AWS Secret Access Key: $AWS_SECRET_ACCESS_KEY"'
+                }
+            }
+        }        
         stage('Create tfvars file') {
             steps {
                 
