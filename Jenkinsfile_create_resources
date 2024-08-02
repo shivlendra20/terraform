@@ -53,7 +53,7 @@ pipeline {
                         export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
                         # Initialize Terraform with the S3 backend configuration
 
-                        terraform init -reconfigure
+                        terraform init
                     '''
                 }
             }
