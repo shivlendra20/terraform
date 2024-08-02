@@ -83,10 +83,9 @@ pipeline {
                     sh """
                     terraform plan 
                     """
-                    
-                
+                    }
             }
-        }
+        }    
         stage('Terraform Apply') {
             steps {
                     
@@ -94,9 +93,8 @@ pipeline {
                     sh """
                     terraform apply -auto-approve
                     """
-                    
-                
+                    }
             }
         }
     }
-}
+}    
