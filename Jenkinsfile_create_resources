@@ -34,11 +34,13 @@ pipeline {
                     sh '''
                         export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
                         export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-                        # Initialize Terraform without backend configuration to create the bucket
-                        #terraform init -backend=false
+                        
                         mv backend.tf backend.tf__
-                        # Apply to create S3 bucket
+                        
                         terraform init
+
+                        terraform destroy -auto-approve -target=aws_s3_bucket.terraform_state || true
+  
                         terraform apply -auto-approve -target=aws_s3_bucket.terraform_state
                         mv backend.tf__ backend.tf
                     '''
