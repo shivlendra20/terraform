@@ -52,11 +52,17 @@ pipeline {
                         export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
                         # Initialize Terraform with the S3 backend configuration
 
-                        yes "yes" | terraform init \
+                        yes "yes" | terraform init 
                           -backend-config="bucket=terraformbucketnew" \
                           -backend-config="key=terraform.tfstate" \
                           -backend-config="region=ap-south-1"
-                        terraform state push terraform.tfstate
+                        #terraform state push terraform.tfstate
+                        if [ -s terraform.tfstate ]; then
+                            echo "Local state file exists and is not empty. Pushing the local state to the S3 backend..."
+                            terraform state push terraform.tfstate
+                        else
+                            echo "No valid local state file found or it is empty. Skipping state push."
+                        fi
                     '''
                 }
             }
