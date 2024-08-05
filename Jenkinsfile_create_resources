@@ -39,7 +39,7 @@ pipeline {
                         
                         terraform init
 
-                        terraform plan -destroy -out=tfplan -target=aws_s3_bucket.terraform_state || true
+                        
                         terraform apply -auto-approve tfplan || true
   
                         terraform apply -auto-approve -target=aws_s3_bucket.terraform_state
