@@ -52,7 +52,7 @@ pipeline {
                         export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
                         # Initialize Terraform with the S3 backend configuration
 
-                        terraform init \
+                        yes "yes" terraform init \
                           -backend-config="bucket=terraformbucketnew" \
                           -backend-config="key=terraform.tfstate" \
                           -backend-config="region=ap-south-1"
