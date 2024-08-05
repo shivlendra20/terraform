@@ -1,1 +1,1 @@
-Launching ECS cluster using terraform via jenkins pipeline.
+ECS cluster using terraform via jenkins pipeline.
