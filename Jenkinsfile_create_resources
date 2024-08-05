@@ -52,7 +52,7 @@ pipeline {
                         export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
                         # Initialize Terraform with the S3 backend configuration
 
-                        yes "yes" terraform init \
+                        yes "yes" | terraform init \
                           -backend-config="bucket=terraformbucketnew" \
                           -backend-config="key=terraform.tfstate" \
                           -backend-config="region=ap-south-1"
@@ -78,7 +78,7 @@ pipeline {
                     sh '''
                         export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
                         export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-                        terraform plan
+                        yes "yes" | terraform plan
                     '''
                 }
             }
