@@ -9,12 +9,7 @@ pipeline {
     }
     
     stages {
-       stage('Clone Repository') {
-            steps {
-                git credentialsId: 'GitHub',
-                repo_url: 'https://github.com/shivlendra20/terraform'
-            }
-        }
+   
         stage('Debug AWS Credentials') {
             steps {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "${AWS_CREDENTIALS_ID}", accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
@@ -42,10 +37,10 @@ pipeline {
             cleanWs()
             }
         }
-        stage('Clone repository') {
+        stage('Clone Repository') {
             steps {
-                git credentialsId: 'Github',
-                url: "${repo_url}"
+                git credentialsId: 'GitHub',
+                    url: 'https://github.com/shivlendra20/terraform'
             }
         }
 
