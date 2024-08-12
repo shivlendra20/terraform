@@ -1,20 +1,12 @@
 pipeline {
     agent any
 
-    options {
-    ansiColor('xterm')
-    }
-    
-    tools {
-        terraform 'Terraform'
-    }
+  
 
     environment {
-        AWS_DEFAULT_REGION= 'ap-south-1'
-        aws_credentials_id = 'AKIATLWHLDWZ72UKU5U3'
-        repo_url = "https://github.com/shivlendra20/terraform"
+        AWS_CREDENTIALS_ID = 'aws_credentials_id' // Jenkins credentials ID
+        AWS_DEFAULT_REGION = 'ap-south-1'
     }
-
     stages {
         stage('Validate input params') {
             steps {
@@ -39,20 +31,7 @@ pipeline {
                 url: "${repo_url}"
             }
         }
-        stage('Create tfvars file') {
-            steps {
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "{aws_credentials_id}", accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) 
-                {
-                    sh """
-                    cat > terraform.tfvars << EOF
-                    environment_name  = "${env.environment}"
-                    service_base_name = "${env.service_name}"
-                    aws_access_key="${AWS_ACCESS_KEY_ID}"
-                    aws_secret_key="${AWS_SECRET_ACCESS_KEY}"
-                """
-                }
-            }
-        }
+
         stage('Terraform init') {
             steps {
                   sh 'terraform init'
