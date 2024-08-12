@@ -44,27 +44,54 @@ pipeline {
             }
         }
 
-        stage('Terraform init') {
+        stage('Terraform Init - Configure Backend') {
             steps {
-                  sh 'terraform init'
-                  sh "terraform workspace select ${env.service_name}-${env.environment}"
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "${AWS_CREDENTIALS_ID}", accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                    sh '''
+                        export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+                        export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+                        # Initialize Terraform with the S3 backend configuration
+
+                        yes "yes" | terraform init \
+                          -backend-config="bucket=terraformbucketnew" \
+                          -backend-config="key=terraform.tfstate" \
+                          -backend-config="region=ap-south-1"
+                        #terraform state push terraform.tfstate
+                        if [ -s terraform.tfstate ]; then
+                            echo "Local state file exists and is not empty. Pushing the local state to the S3 backend..."
+                            terraform state push terraform.tfstate
+                        else
+                            echo "No valid local state file found or it is empty. Skipping state push."
+                        fi
+                    '''
+                }
             }
         }
-        stage('Terraform validate') {
+        stage('Terraform Validate') {
             steps {
-                  sh 'terraform validate'
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "${AWS_CREDENTIALS_ID}", accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                    sh '''
+                        export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+                        export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+                        terraform validate
+                    '''
+                }
             }
         }
-        stage('Terraform plan') {
+        stage('Terraform Plan') {
             steps {
-                  withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "{aws_credentials_id}", accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-                  sh 'terraform plan '
-                  }
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "${AWS_CREDENTIALS_ID}", accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                    sh '''
+                        export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+                        export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+                        yes "yes" | terraform plan
+                    '''
+                }
             }
         }
         stage('Terraform Destroy') {
             steps {
-                  withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "{aws_credentials_id}", accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                  withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "{AWS_CREDENTIALS_ID}", accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
                       sh 'terraform destroy -auto-approve'
                 }
             }
